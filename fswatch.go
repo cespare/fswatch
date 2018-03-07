@@ -17,6 +17,7 @@ const enableLog = false
 
 type watcher struct {
 	dir              string
+	ignore           map[string]struct{}
 	coalesceInterval time.Duration
 	w                *fsnotify.Watcher
 	events           chan []string
@@ -30,17 +31,23 @@ type watcher struct {
 //
 // The watcher coalesces quick sequences of events into a single event slice,
 // using a time window specified by coalesceInterval.
-func Watch(dir string, coalesceInterval time.Duration) (events chan []string, errs chan error, err error) {
+//
+// The ignore list is a list of directories (relative to dir) to ignore.
+func Watch(dir string, coalesceInterval time.Duration, ignore ...string) (events chan []string, errs chan error, err error) {
 	fw, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, nil, err
 	}
 	w := &watcher{
 		dir:              dir,
+		ignore:           make(map[string]struct{}),
 		coalesceInterval: coalesceInterval,
 		w:                fw,
 		events:           make(chan []string),
 		errors:           make(chan error),
+	}
+	for _, name := range ignore {
+		w.ignore[filepath.Join(dir, name)] = struct{}{}
 	}
 	if err := w.addDirRecursive(dir); err != nil {
 		return nil, nil, err
@@ -106,6 +113,9 @@ func (w *watcher) addDirsWalkFunc() filepath.WalkFunc {
 		}
 		if !info.IsDir() {
 			return nil
+		}
+		if _, ok := w.ignore[name]; ok {
+			return filepath.SkipDir
 		}
 		if enableLog {
 			log.Println("Adding watch for", name)

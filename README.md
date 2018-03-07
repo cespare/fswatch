@@ -16,10 +16,3 @@ add some features that I almost always want when using this library:
 This is a library I wrote purely for my own needs and I'm pretty sure it has
 some bugs. Or maybe fsnotify has some bugs. The whole file system notification
 thing has all kinds of fun flakiness, in my experience.
-
-## To do
-
-Another thing I often want is to be able to push down some filter function to
-avoid walking certain directories (or files). But since that can be accomplished
-more efficiently by making better use of the underlying APIs (i.e., writing a
-better fsnotify).
