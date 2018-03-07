@@ -23,14 +23,14 @@ type watcher struct {
 	errors           chan error
 }
 
-// NewWatcher creates a recursive file watch for dir.
+// Watch creates a recursive file watch for dir.
 //
 // It returns two channels; they have meanings similar to fsnotify.Watcher,
 // except that the events channel returns slices of modified files/directories).
 //
 // The watcher coalesces quick sequences of events into a single event slice,
 // using a time window specified by coalesceInterval.
-func NewWatcher(dir string, coalesceInterval time.Duration) (events chan []string, errs chan error, err error) {
+func Watch(dir string, coalesceInterval time.Duration) (events chan []string, errs chan error, err error) {
 	fw, err := fsnotify.NewWatcher()
 	if err != nil {
 		return nil, nil, err

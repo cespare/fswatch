@@ -24,7 +24,7 @@ func main() {
 		log.Fatal("usage: watch [flags] [dir]")
 	}
 
-	events, errors, err := fswatch.NewWatcher(dir, *coalesceInterval)
+	events, errors, err := fswatch.Watch(dir, *coalesceInterval)
 	if err != nil {
 		log.Fatal(err)
 	}
