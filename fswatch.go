@@ -75,8 +75,17 @@ func (w *watcher) filter() {
 			if !ok {
 				return
 			}
+			if enableLog {
+				log.Printf("Raw fsnotify event: %s", ev)
+			}
 			// Ignore events that are *only* CHMOD to work around Spotlight.
 			if ev.Op&chmodMask == 0 {
+				continue
+			}
+			if _, ok := w.ignore[ev.Name]; ok {
+				if enableLog {
+					log.Println("Ignoring change to", ev.Name)
+				}
 				continue
 			}
 			if !timerStarted {
@@ -115,6 +124,9 @@ func (w *watcher) addDirsWalkFunc() filepath.WalkFunc {
 			return nil
 		}
 		if _, ok := w.ignore[name]; ok {
+			if enableLog {
+				log.Println("Ignoring dir", name)
+			}
 			return filepath.SkipDir
 		}
 		if enableLog {
