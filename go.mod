@@ -1,6 +1,7 @@
-module "github.com/cespare/fswatch"
+module github.com/cespare/fswatch
 
-require (
-	"github.com/fsnotify/fsnotify" v1.4.7
-	"golang.org/x/sys" v0.0.0-20180302081741-dd2ff4accc09
-)
+go 1.17
+
+require github.com/fsnotify/fsnotify v1.5.1
+
+require golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
